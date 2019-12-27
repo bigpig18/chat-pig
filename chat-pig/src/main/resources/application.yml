@@ -16,13 +16,13 @@ mapper:
 
 spring:
   datasource:
-    # Êı¾İÔ´
+    # æ•°æ®æº
     url: jdbc:mysql://127.0.0.1:3306/chat?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
     username: root
     password: 123456
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # Á¬½Ó³Ø
+    # è¿æ¥æ± 
     hikari:
       maximum-pool-size: 8
       minimum-idle: 4
@@ -31,3 +31,13 @@ spring:
       max-lifetime: 45000
       auto-commit: true
       pool-name: couponHikariCP
+
+# fdfsæ–‡ä»¶æœåŠ¡å™¨
+fdfs:
+  soTimeout: 1501
+  connectTimeout: 601
+  thumbImage:
+    width: 80
+    height: 80
+  trackerList:
+   - ä½ çš„ip:22122
