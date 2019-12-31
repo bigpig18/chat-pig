@@ -58,14 +58,4 @@ public class UserController {
         return userService.modifyNickName(usersBo);
     }
 
-    /**
-     * 搜索好友,根据账号做匹配查询,非模糊查询
-     * @param userId 用户本人id
-     * @param friendUsername 搜索的好友名
-     * @return {@link ResponseJsonResult}
-     */
-    @PostMapping(value = "/findFriend")
-    public ResponseJsonResult findFriend(String userId,String friendUsername){
-        return userService.findFriend(userId,friendUsername);
-    }
 }

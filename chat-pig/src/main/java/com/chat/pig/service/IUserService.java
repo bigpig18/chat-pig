@@ -61,11 +61,4 @@ public interface IUserService {
      */
     ResponseJsonResult modifyNickName(UsersBo usersBo);
 
-    /**
-     * 搜索好友,根据账号做匹配查询,非模糊查询
-     * @param userId 用户本人id
-     * @param friendUsername 搜索的好友名
-     * @return {@link ResponseJsonResult}
-     */
-    ResponseJsonResult findFriend(String userId, String friendUsername);
 }

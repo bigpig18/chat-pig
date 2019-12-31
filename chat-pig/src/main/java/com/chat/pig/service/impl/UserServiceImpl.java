@@ -37,17 +37,14 @@ public class UserServiceImpl implements IUserService {
 
     private final UsersMapper usersMapper;
 
-    private final MyFriendsMapper friendsMapper;
-
     private final FastDFSClient fastDFSClient;
 
     private final QRCodeUtils codeUtils;
 
     @Autowired
-    public UserServiceImpl(UsersMapper usersMapper, MyFriendsMapper friendsMapper, FastDFSClient fastDFSClient, QRCodeUtils codeUtils) {
+    public UserServiceImpl(UsersMapper usersMapper, FastDFSClient dfsClient, QRCodeUtils codeUtils) {
         this.usersMapper = usersMapper;
-        this.friendsMapper = friendsMapper;
-        this.fastDFSClient = fastDFSClient;
+        this.fastDFSClient = dfsClient;
         this.codeUtils = codeUtils;
     }
 
@@ -157,44 +154,6 @@ public class UserServiceImpl implements IUserService {
         users.setNickname(usersBo.getNickName());
         updateUserInfo(users);
         return queryUserById(usersBo.getId());
-    }
-
-    @Override
-    public ResponseJsonResult findFriend(String userId, String friendUsername) {
-        //判断传入参数是否为空
-        if (StringUtils.isBlank(userId) || StringUtils.isBlank(friendUsername)){
-            return ResponseJsonResult.errorMsg("");
-        }
-        //前置条件
-        Integer status = preconditionFindFriend(userId, friendUsername);
-        if (!status.equals(SearchFriendsStatusEnum.SUCCESS.status)){
-            return ResponseJsonResult.errorMsg(SearchFriendsStatusEnum.getMsgByKey(status));
-        }
-        return queryUserByUsername(friendUsername);
-    }
-
-    /**
-     * 查询好友的前置条件
-     * @param userId 用户id
-     * @param friendUsername 搜索的好友的用户名
-     * @return {@link SearchFriendsStatusEnum}.status
-     */
-    private Integer preconditionFindFriend(String userId, String friendUsername){
-        UsersVo user = (UsersVo) queryUserByUsername(friendUsername).getData();
-        if (user == null){
-            return SearchFriendsStatusEnum.USER_NOT_EXIST.status;
-        }else if (user.getId().equals(userId)){
-            return SearchFriendsStatusEnum.NOT_YOURSELF.status;
-        }
-        Example userFriends = new Example(MyFriends.class);
-        Example.Criteria criteria = userFriends.createCriteria();
-        criteria.andEqualTo("myUserId",userId);
-        criteria.andEqualTo("myFriendUserId",user.getId());
-        MyFriends myFriends = friendsMapper.selectOneByExample(userFriends);
-        if (myFriends != null){
-            return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
-        }
-        return SearchFriendsStatusEnum.SUCCESS.status;
     }
 
     /**
