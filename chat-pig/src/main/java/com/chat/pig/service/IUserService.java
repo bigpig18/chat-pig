@@ -33,6 +33,13 @@ public interface IUserService {
     ResponseJsonResult queryUserById(String id);
 
     /**
+     * 根据用户名查询用户信息
+     * @param userName 用户名
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult queryUserByUsername(String userName);
+
+    /**
      * 用户登录或注册
      * @param users 用户信息
      * @return {@link ResponseJsonResult}
@@ -53,4 +60,12 @@ public interface IUserService {
      * @return {@link ResponseJsonResult}
      */
     ResponseJsonResult modifyNickName(UsersBo usersBo);
+
+    /**
+     * 搜索好友,根据账号做匹配查询,非模糊查询
+     * @param userId 用户本人id
+     * @param friendUsername 搜索的好友名
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult findFriend(String userId, String friendUsername);
 }

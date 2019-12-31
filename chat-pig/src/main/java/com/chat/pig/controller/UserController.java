@@ -1,6 +1,7 @@
 package com.chat.pig.controller;
 
 import com.chat.pig.entity.Users;
+import com.chat.pig.entity.bo.UsersBo;
 import com.chat.pig.service.IUserService;
 import com.chat.pig.utils.ResponseJsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +38,34 @@ public class UserController {
         return userService.userRegisterOrLogin(users);
     }
 
+    /**
+     * 上传头像到文件服务器
+     * @param usersBo {@link UsersBo}
+     * @return {@link ResponseJsonResult}
+     */
+    @PostMapping(value = "/uploadFaceImg")
+    public ResponseJsonResult uploadFaceImg(@RequestBody UsersBo usersBo){
+        return userService.uploadFaceImg(usersBo);
+    }
+
+    /**
+     * 上传头像到文件服务器
+     * @param usersBo {@link UsersBo}
+     * @return {@link ResponseJsonResult}
+     */
+    @PostMapping(value = "/modifyNickName")
+    public ResponseJsonResult modifyNickName(@RequestBody UsersBo usersBo){
+        return userService.modifyNickName(usersBo);
+    }
+
+    /**
+     * 搜索好友,根据账号做匹配查询,非模糊查询
+     * @param userId 用户本人id
+     * @param friendUsername 搜索的好友名
+     * @return {@link ResponseJsonResult}
+     */
+    @PostMapping(value = "/findFriend")
+    public ResponseJsonResult findFriend(String userId,String friendUsername){
+        return userService.findFriend(userId,friendUsername);
+    }
 }
