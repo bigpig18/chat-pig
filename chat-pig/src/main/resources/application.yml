@@ -40,4 +40,8 @@ fdfs:
     width: 80
     height: 80
   trackerList:
-   - 你的ip:22122
+   - 文件服务器ip:22122
+
+# 临时文件夹
+img:
+  temp: classpath:tmp/

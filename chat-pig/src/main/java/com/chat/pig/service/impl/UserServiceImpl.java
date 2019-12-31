@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,9 @@ import java.io.IOException;
 @Slf4j
 @Service
 public class UserServiceImpl implements IUserService {
+
+    @Value("${img.tmp:#{null}}")
+    private String tmpFilePath;
 
     private final UsersMapper usersMapper;
 
@@ -94,8 +98,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseJsonResult uploadFaceImg(UsersBo usersBo) {
+        log.info("Image Temp File Path: {}",tmpFilePath);
         //临时存储路径
-        String userFacePath = "classpath:tmp/" + usersBo.getId() + "userFace.png";
+        String userFacePath = tmpFilePath + usersBo.getId() + "userFace.png";
         //获取前端传来的base64字符串
         String base64Data = usersBo.getFaceData();
         //转换为文件对象
@@ -171,7 +176,8 @@ public class UserServiceImpl implements IUserService {
         }
         //生成唯一二维码
         //pigChat_qrCode:[username]
-        String qrCodePath = "classpath:tmp/user_" + userId + "_qrCode.png";
+        log.info("Image Temp File Path: {}",tmpFilePath);
+        String qrCodePath = tmpFilePath + "/user_" + userId + "_qrCode.png";
         codeUtils.createQRCode(qrCodePath,"pigChat_qrCode:[" + users.getUsername() + "]");
         MultipartFile codeFile = FileUtils.fileToMultipart(qrCodePath);
         String codeUrl;
