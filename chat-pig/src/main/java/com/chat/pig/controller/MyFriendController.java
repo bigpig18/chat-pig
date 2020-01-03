@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author li
  * @date 2019/12/31
  */
-@RequestMapping(value = "friend")
+@RequestMapping(value = "/friend")
 @RestController
 public class MyFriendController {
 

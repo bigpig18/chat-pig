@@ -1,6 +1,8 @@
 package com.chat.pig.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -14,6 +16,8 @@ import java.util.Date;
  * @date 2019/12/24
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "friends_request")
 public class FriendsRequest {
     @Id

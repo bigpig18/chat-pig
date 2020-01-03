@@ -1,17 +1,22 @@
 package com.chat.pig.service.impl;
 
 import com.chat.pig.constant.SearchFriendsStatusEnum;
+import com.chat.pig.entity.FriendsRequest;
 import com.chat.pig.entity.MyFriends;
 import com.chat.pig.entity.vo.UsersVo;
+import com.chat.pig.mapper.FriendsRequestMapper;
 import com.chat.pig.mapper.MyFriendsMapper;
 import com.chat.pig.service.IMyFriendService;
 import com.chat.pig.service.IUserService;
+import com.chat.pig.utils.GenerateUniqueId;
 import com.chat.pig.utils.ResponseJsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.Date;
 
 /**
  * 描述: 我的好友服务相关接口实现
@@ -25,11 +30,14 @@ public class MyFriendServiceImpl implements IMyFriendService {
 
     private final MyFriendsMapper friendsMapper;
 
+    private final FriendsRequestMapper requestMapper;
+
     private final IUserService userService;
 
     @Autowired
-    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, IUserService userService) {
+    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, FriendsRequestMapper requestMapper, IUserService userService) {
         this.friendsMapper = friendsMapper;
+        this.requestMapper = requestMapper;
         this.userService = userService;
     }
 
@@ -49,7 +57,40 @@ public class MyFriendServiceImpl implements IMyFriendService {
 
     @Override
     public ResponseJsonResult addFriend(String userId, String friendUsername) {
-        return null;
+        //判断传入参数是否为空
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(friendUsername)){
+            return ResponseJsonResult.errorMsg("");
+        }
+        //前置条件
+        Integer status = preconditionFindFriend(userId, friendUsername);
+        if (!status.equals(SearchFriendsStatusEnum.SUCCESS.status)){
+            return ResponseJsonResult.errorMsg(SearchFriendsStatusEnum.getMsgByKey(status));
+        }
+        //发送添加好友请求
+        sendFriendRequest(userId,friendUsername);
+        return ResponseJsonResult.ok();
+    }
+
+    /**
+     * 发送好友请求
+     * @param userId 用户id
+     * @param friendUsername 要添加好友的账号
+     */
+    private void sendFriendRequest(String userId, String friendUsername) {
+        //根据friendUsername获取朋友信息
+        UsersVo friend = (UsersVo) userService.queryUserByUsername(friendUsername).getData();
+        //查询发送好友请求记录表
+        Example fre = new Example(FriendsRequest.class);
+        Example.Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId",userId);
+        frc.andEqualTo("acceptUserId",friend.getId());
+        FriendsRequest friendsRequest = requestMapper.selectOneByExample(fre);
+        if (friendsRequest == null){
+            //生成唯一id
+            String requestId = GenerateUniqueId.generate16Id();
+            FriendsRequest request = new FriendsRequest(requestId,userId,friend.getId(),new Date());
+            requestMapper.insert(request);
+        }
     }
 
     /**
