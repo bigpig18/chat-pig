@@ -5,6 +5,7 @@ import com.chat.pig.entity.FriendsRequest;
 import com.chat.pig.entity.MyFriends;
 import com.chat.pig.entity.vo.UsersVo;
 import com.chat.pig.mapper.FriendsRequestMapper;
+import com.chat.pig.mapper.FriendsRequestMapperCustom;
 import com.chat.pig.mapper.MyFriendsMapper;
 import com.chat.pig.service.IMyFriendService;
 import com.chat.pig.service.IUserService;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
@@ -30,13 +33,16 @@ public class MyFriendServiceImpl implements IMyFriendService {
 
     private final MyFriendsMapper friendsMapper;
 
+    private final FriendsRequestMapperCustom requestMapperCustom;
+
     private final FriendsRequestMapper requestMapper;
 
     private final IUserService userService;
 
     @Autowired
-    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, FriendsRequestMapper requestMapper, IUserService userService) {
+    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, FriendsRequestMapperCustom requestMapperCustom, FriendsRequestMapper requestMapper, IUserService userService) {
         this.friendsMapper = friendsMapper;
+        this.requestMapperCustom = requestMapperCustom;
         this.requestMapper = requestMapper;
         this.userService = userService;
     }
@@ -69,6 +75,15 @@ public class MyFriendServiceImpl implements IMyFriendService {
         //发送添加好友请求
         sendFriendRequest(userId,friendUsername);
         return ResponseJsonResult.ok();
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = Exception.class)
+    @Override
+    public ResponseJsonResult queryFriendRequest(String acceptId) {
+        if (StringUtils.isBlank(acceptId)){
+            return ResponseJsonResult.errorMsg("");
+        }
+        return ResponseJsonResult.ok(requestMapperCustom.queryFriendRequestList(acceptId));
     }
 
     /**

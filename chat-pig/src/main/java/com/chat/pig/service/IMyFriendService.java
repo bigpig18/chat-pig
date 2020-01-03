@@ -25,4 +25,11 @@ public interface IMyFriendService {
      * @return {@link ResponseJsonResult}
      */
     ResponseJsonResult addFriend(String userId, String friendUsername);
+
+    /**
+     * 查询好友请求列表
+     * @param acceptId 接收者id
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult queryFriendRequest(String acceptId);
 }

@@ -45,4 +45,14 @@ public class MyFriendController {
     public ResponseJsonResult addFriend(String userId,String friendUsername){
         return myFriendService.addFriend(userId,friendUsername);
     }
+
+    /**
+     * 查询好友请求列表
+     * @param acceptId 接收者id
+     * @return {@link ResponseJsonResult}
+     */
+    @PostMapping(value = "/queryFriendRequest")
+    public ResponseJsonResult queryFriendRequest(String acceptId){
+        return myFriendService.queryFriendRequest(acceptId);
+    }
 }

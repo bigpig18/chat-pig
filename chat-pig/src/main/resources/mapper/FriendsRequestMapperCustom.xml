@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chat.pig.mapper.FriendsRequestMapperCustom">
+
+    <select id="queryFriendRequestList" resultType="com.chat.pig.entity.vo.FriendRequestVo">
+        SELECT sender.id AS sendUserId,
+               sender.username AS sendUsername,
+               sender.face_image AS sendFaceImage,
+               sender.nickname AS sendNickname
+        FROM friends_request fr
+        LEFT JOIN users sender
+                ON fr.send_user_id = sender.id
+        WHERE fr.accept_user_id = #{accepterId}
+    </select>
+</mapper>
