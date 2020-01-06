@@ -4,10 +4,12 @@ import com.chat.pig.constant.OperatorFriendRequestTypeEnum;
 import com.chat.pig.constant.SearchFriendsStatusEnum;
 import com.chat.pig.entity.FriendsRequest;
 import com.chat.pig.entity.MyFriends;
+import com.chat.pig.entity.vo.MyFriendsVo;
 import com.chat.pig.entity.vo.UsersVo;
 import com.chat.pig.mapper.FriendsRequestMapper;
 import com.chat.pig.mapper.FriendsRequestMapperCustom;
 import com.chat.pig.mapper.MyFriendsMapper;
+import com.chat.pig.mapper.MyFriendsMapperCustom;
 import com.chat.pig.service.IMyFriendService;
 import com.chat.pig.service.IUserService;
 import com.chat.pig.utils.GenerateUniqueId;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 描述: 我的好友服务相关接口实现
@@ -34,6 +37,8 @@ public class MyFriendServiceImpl implements IMyFriendService {
 
     private final MyFriendsMapper friendsMapper;
 
+    private final MyFriendsMapperCustom friendsMapperCustom;
+
     private final FriendsRequestMapperCustom requestMapperCustom;
 
     private final FriendsRequestMapper requestMapper;
@@ -41,8 +46,9 @@ public class MyFriendServiceImpl implements IMyFriendService {
     private final IUserService userService;
 
     @Autowired
-    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, FriendsRequestMapperCustom requestMapperCustom, FriendsRequestMapper requestMapper, IUserService userService) {
+    public MyFriendServiceImpl(MyFriendsMapper friendsMapper, MyFriendsMapperCustom friendsMapperCustom, FriendsRequestMapperCustom requestMapperCustom, FriendsRequestMapper requestMapper, IUserService userService) {
         this.friendsMapper = friendsMapper;
+        this.friendsMapperCustom = friendsMapperCustom;
         this.requestMapperCustom = requestMapperCustom;
         this.requestMapper = requestMapper;
         this.userService = userService;
@@ -103,11 +109,23 @@ public class MyFriendServiceImpl implements IMyFriendService {
             saveFriendRequest(sendId, acceptId);
             saveFriendRequest(acceptId, sendId);
             deleteFriendRequest(sendId,acceptId);
-            return ResponseJsonResult.ok("添加成功");
+            //返回更新后的好友列表，便于前端更新
+            return ResponseJsonResult.ok(friendsMapperCustom.getAllUserFriends(acceptId));
         }else {
             //若操作类型无对应的枚举值，则返回空错误信息
             return ResponseJsonResult.errorMsg("");
         }
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = Exception.class)
+    @Override
+    public ResponseJsonResult queryAllUserFriends(String userId) {
+        if (StringUtils.isBlank(userId)){
+            return ResponseJsonResult.errorMsg("");
+        }
+        //查询好友列表
+        List<MyFriendsVo> allMyFriends = friendsMapperCustom.getAllUserFriends(userId);
+        return ResponseJsonResult.ok(allMyFriends);
     }
 
     /**

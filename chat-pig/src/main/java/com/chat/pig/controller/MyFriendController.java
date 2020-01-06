@@ -3,6 +3,7 @@ package com.chat.pig.controller;
 import com.chat.pig.service.IMyFriendService;
 import com.chat.pig.utils.ResponseJsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,5 +67,15 @@ public class MyFriendController {
     @PostMapping(value = "/operatorFriendRequest")
     public ResponseJsonResult operatorFriendRequest(String acceptId,String sendId,Integer operatorType){
         return myFriendService.operatorFriendRequest(acceptId,sendId,operatorType);
+    }
+
+    /**
+     * 查询用户所有的好友
+     * @param userId 用户id
+     * @return {@link ResponseJsonResult}
+     */
+    @GetMapping(value = "/allMyFriends")
+    public ResponseJsonResult allMyFriends(String userId){
+        return myFriendService.queryAllUserFriends(userId);
     }
 }

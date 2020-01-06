@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chat.pig.mapper.MyFriendsMapperCustom">
+
+    <select id="getAllUserFriends" resultType="com.chat.pig.entity.vo.MyFriendsVo">
+        SELECT
+          u.id AS friendId,
+          u.username AS friendUsername,
+          u.face_image AS friendFaceImage,
+          u.nickname AS friendNickname
+        FROM my_friends mf
+        LEFT JOIN users u
+                ON mf.my_friend_user_id = u.id
+        WHERE mf.my_user_id = #{userId}
+    </select>
+</mapper>

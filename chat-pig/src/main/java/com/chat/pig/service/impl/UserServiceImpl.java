@@ -190,10 +190,10 @@ public class UserServiceImpl implements IUserService {
             return null;
         }
         //生成唯一二维码
-        //pigChat_qrCode:[username]
+        //pigChat_qrCode:username
         log.info("Image Temp File Path: {}",tmpFilePath);
         String qrCodePath = tmpFilePath + "/user_" + userId + "_qrCode.png";
-        codeUtils.createQRCode(qrCodePath,"pigChat_qrCode:[" + users.getUsername() + "]");
+        codeUtils.createQRCode(qrCodePath,"pigChat_qrCode:" + users.getUsername());
         MultipartFile codeFile = FileUtils.fileToMultipart(qrCodePath);
         String codeUrl;
         try {

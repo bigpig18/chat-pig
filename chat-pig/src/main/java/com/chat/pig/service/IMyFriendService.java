@@ -41,4 +41,11 @@ public interface IMyFriendService {
      * @return {@link ResponseJsonResult}
      */
     ResponseJsonResult operatorFriendRequest(String acceptId, String sendId, Integer operatorType);
+
+    /**
+     * 查询用户所有的好友
+     * @param userId 用户id
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult queryAllUserFriends(String userId);
 }
