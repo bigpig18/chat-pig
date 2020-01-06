@@ -32,4 +32,13 @@ public interface IMyFriendService {
      * @return {@link ResponseJsonResult}
      */
     ResponseJsonResult queryFriendRequest(String acceptId);
+
+    /**
+     * 接收方通过或者忽略好友请求
+     * @param acceptId 接受方id
+     * @param sendId 发送方id
+     * @param operatorType 操作类型
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult operatorFriendRequest(String acceptId, String sendId, Integer operatorType);
 }

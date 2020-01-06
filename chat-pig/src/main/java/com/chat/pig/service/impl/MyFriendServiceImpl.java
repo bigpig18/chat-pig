@@ -1,5 +1,6 @@
 package com.chat.pig.service.impl;
 
+import com.chat.pig.constant.OperatorFriendRequestTypeEnum;
 import com.chat.pig.constant.SearchFriendsStatusEnum;
 import com.chat.pig.entity.FriendsRequest;
 import com.chat.pig.entity.MyFriends;
@@ -86,6 +87,29 @@ public class MyFriendServiceImpl implements IMyFriendService {
         return ResponseJsonResult.ok(requestMapperCustom.queryFriendRequestList(acceptId));
     }
 
+    @Override
+    public ResponseJsonResult operatorFriendRequest(String acceptId, String sendId, Integer operatorType) {
+        //判断参数是否为空
+        if (StringUtils.isBlank(acceptId) || StringUtils.isBlank(sendId) || operatorType == null){
+            return ResponseJsonResult.errorMsg("");
+        }
+
+        if (operatorType.equals(OperatorFriendRequestTypeEnum.IGNORE.type)){
+            //若为忽略，直接删除好友请求
+            deleteFriendRequest(sendId,acceptId);
+            return ResponseJsonResult.ok("已忽略");
+        }else if (operatorType.equals(OperatorFriendRequestTypeEnum.PASS.type)){
+            //若为通过，互相添加好友记录到数据库对应的表，而后删除好友请求
+            saveFriendRequest(sendId, acceptId);
+            saveFriendRequest(acceptId, sendId);
+            deleteFriendRequest(sendId,acceptId);
+            return ResponseJsonResult.ok("添加成功");
+        }else {
+            //若操作类型无对应的枚举值，则返回空错误信息
+            return ResponseJsonResult.errorMsg("");
+        }
+    }
+
     /**
      * 发送好友请求
      * @param userId 用户id
@@ -130,5 +154,29 @@ public class MyFriendServiceImpl implements IMyFriendService {
             return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
         }
         return SearchFriendsStatusEnum.SUCCESS.status;
+    }
+
+    /**
+     * 保存好友
+     * @param sendId 发送者id
+     * @param acceptId 接收者id
+     */
+    private void saveFriendRequest(String sendId, String acceptId){
+        String id = GenerateUniqueId.generate16Id();
+        MyFriends myFriends = new MyFriends(id,acceptId,sendId);
+        friendsMapper.insert(myFriends);
+    }
+
+    /**
+     * 删除好友请求记录
+     * @param sendId 发送者id
+     * @param acceptId 接收者id
+     */
+    private void deleteFriendRequest(String sendId,String acceptId){
+        Example fre = new Example(FriendsRequest.class);
+        Example.Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId",sendId);
+        frc.andEqualTo("acceptUserId",acceptId);
+        requestMapper.deleteByExample(fre);
     }
 }

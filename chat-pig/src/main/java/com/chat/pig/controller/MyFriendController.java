@@ -55,4 +55,16 @@ public class MyFriendController {
     public ResponseJsonResult queryFriendRequest(String acceptId){
         return myFriendService.queryFriendRequest(acceptId);
     }
+
+    /**
+     * 接收方通过或者忽略好友请求
+     * @param acceptId 接受方id
+     * @param sendId 发送方id
+     * @param operatorType 操作类型
+     * @return {@link ResponseJsonResult}
+     */
+    @PostMapping(value = "/operatorFriendRequest")
+    public ResponseJsonResult operatorFriendRequest(String acceptId,String sendId,Integer operatorType){
+        return myFriendService.operatorFriendRequest(acceptId,sendId,operatorType);
+    }
 }
