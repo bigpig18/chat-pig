@@ -36,7 +36,7 @@ public class WebSocketServer {
         server = new ServerBootstrap();
         server.group(mainGroup, subGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new WebSocketServerInitialzer());
+                .childHandler(new WebSocketServerInitializer());
     }
 
     public void start(){
