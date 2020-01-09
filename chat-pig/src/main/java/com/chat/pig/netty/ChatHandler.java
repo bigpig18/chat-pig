@@ -3,7 +3,7 @@ package com.chat.pig.netty;
 import com.chat.pig.constant.MsgActionEnum;
 import com.chat.pig.service.IChatService;
 import com.chat.pig.utils.JsonUtils;
-import com.chat.pig.utils.SpringUtil;
+import com.chat.pig.SpringUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -14,10 +14,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,10 +32,6 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
      * 用于记录和管理所有客户端的channel
      */
     private static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    /**
-     * 获取当前时间
-     */
-    private String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
@@ -106,7 +100,7 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Handler Added...");
+        log.debug("Handler Added - {}",ctx.channel().id().asLongText());
         //获取channel
         //将channel放入ChannelGroup中进行管理
         users.add(ctx.channel());

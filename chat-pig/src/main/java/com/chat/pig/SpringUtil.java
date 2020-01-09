@@ -1,4 +1,4 @@
-package com.chat.pig.utils;
+package com.chat.pig;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
