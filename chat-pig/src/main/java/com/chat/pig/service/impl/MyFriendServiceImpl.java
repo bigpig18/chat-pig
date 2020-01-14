@@ -1,5 +1,6 @@
 package com.chat.pig.service.impl;
 
+import com.chat.pig.constant.MsgActionEnum;
 import com.chat.pig.constant.OperatorFriendRequestTypeEnum;
 import com.chat.pig.constant.SearchFriendsStatusEnum;
 import com.chat.pig.entity.FriendsRequest;
@@ -10,10 +11,15 @@ import com.chat.pig.mapper.FriendsRequestMapper;
 import com.chat.pig.mapper.FriendsRequestMapperCustom;
 import com.chat.pig.mapper.MyFriendsMapper;
 import com.chat.pig.mapper.MyFriendsMapperCustom;
+import com.chat.pig.netty.DataContent;
+import com.chat.pig.netty.UserChannelRel;
 import com.chat.pig.service.IMyFriendService;
 import com.chat.pig.service.IUserService;
 import com.chat.pig.utils.GenerateUniqueId;
+import com.chat.pig.utils.JsonUtils;
 import com.chat.pig.utils.ResponseJsonResult;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +115,17 @@ public class MyFriendServiceImpl implements IMyFriendService {
             saveFriendRequest(sendId, acceptId);
             saveFriendRequest(acceptId, sendId);
             deleteFriendRequest(sendId,acceptId);
+
+            //使用websocket主动随送消息给请求发起者，更新其通讯录为最新
+            //首先获取其channel
+            Channel sendChannel = UserChannelRel.getChannel(sendId);
+            if (sendChannel != null){
+                DataContent dataContent = new DataContent();
+                dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+                //推送
+                sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+            }
+
             //返回更新后的好友列表，便于前端更新
             return ResponseJsonResult.ok(friendsMapperCustom.getAllUserFriends(acceptId));
         }else {

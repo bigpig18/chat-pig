@@ -60,6 +60,8 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
             String msgId = chatService.saveMsg(chatMsg);
             chatMsg.setMsgId(msgId);
 
+            DataContent dataContentMsg = new DataContent();
+            dataContentMsg.setChatMsg(chatMsg);
             //发送消息
             //从全局用户channel中获取接收方的channel
             Channel acceptChannel = UserChannelRel.getChannel(acceptId);
@@ -71,7 +73,7 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
                 Channel findChannel = users.find(acceptChannel.id());
                 if (findChannel != null){
                     //用户在线
-                    acceptChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(chatMsg)));
+                    acceptChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContentMsg)));
                 }else{
                     //TODO 用户离线
                     log.info("用户离线，推送消息");
