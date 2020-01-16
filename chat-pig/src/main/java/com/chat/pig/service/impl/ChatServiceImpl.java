@@ -6,11 +6,13 @@ import com.chat.pig.mapper.ChatMsgMapperCustom;
 import com.chat.pig.netty.ChatMsg;
 import com.chat.pig.service.IChatService;
 import com.chat.pig.utils.GenerateUniqueId;
+import com.chat.pig.utils.ResponseJsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
 import java.util.List;
@@ -58,5 +60,16 @@ public class ChatServiceImpl implements IChatService {
             chatMsgMapperCustom.batchSignMsg(msgIds);
         }
         log.error("Sign Msg: MsgIds is Empty");
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = Exception.class)
+    @Override
+    public ResponseJsonResult getUnsignedMsgList(String acceptId) {
+        Example chatExample = new Example(com.chat.pig.entity.ChatMsg.class);
+        Example.Criteria criteria = chatExample.createCriteria();
+        criteria.andEqualTo("acceptUserId",acceptId);
+        criteria.andEqualTo("signFlag",0);
+        List<com.chat.pig.entity.ChatMsg> unsignedMsgList = chatMsgMapper.selectByExample(chatExample);
+        return ResponseJsonResult.ok(unsignedMsgList);
     }
 }

@@ -1,6 +1,7 @@
 package com.chat.pig.service;
 
 import com.chat.pig.netty.ChatMsg;
+import com.chat.pig.utils.ResponseJsonResult;
 
 import java.util.List;
 
@@ -24,4 +25,11 @@ public interface IChatService {
      * @param msgIds 要签收的消息id
      */
     void signMsg(List<String> msgIds);
+
+    /**
+     * 用户手机端获取未签收的消息列表
+     * @param acceptId 接收方id
+     * @return {@link ResponseJsonResult}
+     */
+    ResponseJsonResult getUnsignedMsgList(String acceptId);
 }
